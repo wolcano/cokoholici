@@ -66,4 +66,5 @@ function zmen_clena($id, $meno, $mesto, $ulica, $psc) {
 	return true;
 }
 
+
 ?>
