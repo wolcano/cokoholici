@@ -66,5 +66,5 @@ function zmen_clena($id, $meno, $mesto, $ulica, $psc) {
 	return true;
 }
 
-
 ?>
+<html><head><title>Projekt z predmetu SWI2 - system anonymnych cokoholikov - Cokoholics Anonymous</title></head><body></body></html>
