@@ -40,7 +40,8 @@ $hlavne_menu = array(
 	'vyziadaj_hodnoty_pridaj_poskytovatela' => 'Pridavanie noveho poskytovatela',
 	'vyziadaj_zoznam_poskytovatelov' => 'Zmena udajov poskytovatela',
 	'zadajCisloClena' => 'Overenie stavu clena',
-	'zadajCisloClenaNavstevy' => 'Zadavanie navstevy clena',
+	'zadajCisloClenaNavstevy' => 'Pridat navstevu clena',
+	'zobrazTlacHlaseni' => 'Tlacit hlasenia',
 	'Odhlasenie' => 'Odhlasenie'
 );
 
@@ -226,6 +227,7 @@ if (isset($_POST) && count($_POST) > 0) {
 		case 'Zobraz stav clena':
 		case 'zadajCisloClena':
 		case 'zadajCisloClenaNavstevy':
+		case 'zobrazTlacHlaseni':
 			$_SESSION['stav'] = $_POST['action'];
 			break;
 
@@ -383,8 +385,12 @@ switch ($_SESSION['stav']) {
 		$body = 'Zobrazovanie dostupnych sluzieb nieje aktivne, nakolko nemame definovanu strukturu pre uchovavanie poskytovanych sluzieb.';
 		$body .= vyrob_navrat_na_hlavne_menu();
 		break;
+	case 'zobrazTlacHlaseni': // stub
+		$body = 'Zobrazovanie tlacenia hlaseni (o clenoch, poskytovateloch a manazerskych reportov) nieje dostupne.';
+		$body .= vyrob_navrat_na_hlavne_menu();
+		break;
 	default:
-		$body = 'Hlavne menu:<br>';
+		$body = 'Informacny system Anonymnych cokoholikov<br><br><br>';
 		$body .= zobraz_menu($hlavne_menu);
 }
 
