@@ -42,6 +42,7 @@ $hlavne_menu = array(
 	'zadajCisloClena' => 'Overenie stavu clena',
 	'zadajCisloClenaNavstevy' => 'Pridat navstevu clena',
 	'zobrazTlacHlaseni' => 'Tlacit hlasenia',
+	'highlightfile' => 'Zobraz zdrojovy kod',
 	'Odhlasenie' => 'Odhlasenie'
 );
 
@@ -228,6 +229,7 @@ if (isset($_POST) && count($_POST) > 0) {
 		case 'zadajCisloClena':
 		case 'zadajCisloClenaNavstevy':
 		case 'zobrazTlacHlaseni':
+		case 'highlightfile':
 			$_SESSION['stav'] = $_POST['action'];
 			break;
 
@@ -388,6 +390,10 @@ switch ($_SESSION['stav']) {
 	case 'zobrazTlacHlaseni': // stub
 		$body = 'Zobrazovanie tlacenia hlaseni (o clenoch, poskytovateloch a manazerskych reportov) nieje dostupne.';
 		$body .= vyrob_navrat_na_hlavne_menu();
+		break;
+	case 'highlightfile':
+		$body = highlight_file('index.php');
+		$_SESSION['stav'] = '';
 		break;
 	default:
 		$body = 'Informacny system Anonymnych cokoholikov<br><br><br>';
