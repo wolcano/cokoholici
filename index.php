@@ -1,11 +1,16 @@
 <?php
-error_reporting(-1);
-
 session_start();
-$DB_NAME='cokoholici.sqlite';
 
+// neimplementovane triedy:
+/////////////////// trieda Navsteva
+/////////////////// trieda Sluzba
+/////////////////// trieda Platba
+/////////////////// trieda Report
+
+
+
+/////////////////// trieda Storage
 /*
-#!/bin/bash
 sqlite cokoholici.sqlite
 
 create table clenovia (
@@ -33,17 +38,7 @@ create table sluzby (
 );
 
 */
-
-$hlavne_menu = array(
-	'vyziadaj_hodnoty_pridaj_clena' => 'Pridavanie noveho clena',
-	'vyziadaj_zoznam_clenov_na_zmenu' => 'Zmena udajov existujuceho clena',
-	'vyziadaj_hodnoty_pridaj_poskytovatela' => 'Pridavanie noveho poskytovatela',
-	'vyziadaj_zoznam_poskytovatelov' => 'Zmena udajov poskytovatela',
-	'zadajCisloClena' => 'Overenie stavu clena',
-	'zadajCisloClenaNavstevy' => 'Pridat navstevu clena',
-	'zobrazTlacHlaseni' => 'Tlacit hlasenia',
-	'Odhlasenie' => 'Odhlasenie'
-);
+$DB_NAME='cokoholici.sqlite';
 
 function snull($v) {
 	return ($v == '' ? 'NULL' : $v);
@@ -87,8 +82,7 @@ function vyrob_zoznam_z_db($tab, $key_col, $val_col, $filter) {
 }
 
 
-///////////////////
-/////////////////// MEMBER INFO CLASS
+/////////////////// trieda Osoba
 function najdi_clena_podla_id($cisloClena) {
 	if ($cisloClena > 0) {
 		return my_query_single('select cisloClena from clenovia where cisloClena='.$cisloClena.';');
@@ -127,8 +121,69 @@ function zmen_alebo_pridaj_clena($cisloClena, $meno, $mesto, $ulica, $psc, $typ)
 		return 'clen bol zmeneny';
 	}
 }
-/////////////////// MEMBER INFO CLASS
-///////////////////
+
+function parametre_osoby() {
+	return array(
+		'cisloClena'=>'Cislo clena',
+		'meno'=>'Meno a priezvisko',
+		'ulica'=>'Ulica',
+		'mesto'=>'Mesto',
+		'psc'=>'PSC'
+	);
+}
+
+
+/////////////////// trieda Poskytovatel
+function parametre_poskytovatela() {
+	$p = parametre_osoby();
+	return array_merge($p, array('typ' => 'Typ (D - dietolog, I - internista, S - specialista)'));
+}
+
+function poskytovatelJeAktivny($id) {
+	return 1; //stub
+}
+
+
+/////////////////// trieda Clen
+function getStatus($nezaplatene, $celkom) {
+	if ($celkom == 0) {
+		return 'N';
+	}
+	if ($nezaplatene < $celkom) {
+		return 'S';
+	}
+
+	return 'A';
+}
+
+function zobrazStatus($status) {
+	switch ($status) {
+		case 'A': return 'Aktivny';
+		case 'N': return 'Neaktivny';
+		case 'S': return 'Suspendovany';
+		return 'Neznamy';
+	}
+}
+
+function overZaplatenie($id) {
+	$nezaplatene = my_query_single('select count(*) from mesacnePoplatky where zaplateny="N" and cisloClena='.$id.';');
+	$celkom = my_query_single('select count(*) from mesacnePoplatky where cisloClena='.$id.';');
+	return getStatus($nezaplatene, $celkom);
+}
+
+
+
+/////////////////// trieda Aplikacia
+$hlavne_menu = array(
+	'vyziadaj_hodnoty_pridaj_clena' => 'Pridavanie noveho clena',
+	'vyziadaj_zoznam_clenov_na_zmenu' => 'Zmena udajov existujuceho clena',
+	'vyziadaj_hodnoty_pridaj_poskytovatela' => 'Pridavanie noveho poskytovatela',
+	'vyziadaj_zoznam_poskytovatelov' => 'Zmena udajov poskytovatela',
+	'zadajCisloClena' => 'Overenie stavu clena',
+	'zadajCisloClenaNavstevy' => 'Pridat navstevu clena',
+	'zobrazTlacHlaseni' => 'Tlacit hlasenia',
+	'Odhlasenie' => 'Odhlasenie'
+);
 
 function vyziadaj_hodnoty($nazvy, $hodnoty, $submit) {
 	$form = '<form method="POST"><table border=0>';
@@ -166,56 +221,10 @@ function vyrob_zoznam($nazvy, $hodnoty, $submit_action) {
 	return $ret;
 }
 
-function parametre_osoby() {
-	return array(
-		'cisloClena'=>'Cislo clena',
-		'meno'=>'Meno a priezvisko',
-		'ulica'=>'Ulica',
-		'mesto'=>'Mesto',
-		'psc'=>'PSC'
-	);
-}
-
-function parametre_poskytovatela() {
-	$p = parametre_osoby();
-	return array_merge($p, array('typ' => 'Typ (D - dietolog, I - internista, S - specialista)'));
-}
-
 function vyrob_navrat_na_hlavne_menu() {
 	$form = '<form method=POST><input type=submit name="action" value="Hlavne menu"></form>';
 	return $form;
 }
-
-function getStatus($nezaplatene, $celkom) {
-	if ($celkom == 0) {
-		return 'N';
-	}
-	if ($nezaplatene < $celkom) {
-		return 'S';
-	}
-
-	return 'A';
-}
-
-function zobrazStatus($status) {
-	switch ($status) {
-		case 'A': return 'Aktivny';
-		case 'N': return 'Neaktivny';
-		case 'S': return 'Suspendovany';
-		return 'Neznamy';
-	}
-}
-
-function overZaplatenie($id) {
-	$nezaplatene = my_query_single('select count(*) from mesacnePoplatky where zaplateny="N" and cisloClena='.$id.';');
-	$celkom = my_query_single('select count(*) from mesacnePoplatky where cisloClena='.$id.';');
-	return getStatus($nezaplatene, $celkom);
-}
-
-function poskytovatelJeAktivny($id) {
-	return 1; //stub
-}
-
 if (isset($_POST) && count($_POST) > 0) {
 	switch ($_POST['action']) {
 		case 'vyziadaj_hodnoty_pridaj_clena':
